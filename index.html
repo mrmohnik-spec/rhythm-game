@@ -99,6 +99,12 @@
             border-color: #6366f1;
             background: linear-gradient(145deg, #252538, #1a1a26);
         }
+        .level-card.unlocked.has-bg {
+            background-image: linear-gradient(rgba(18, 18, 18, 0.5), rgba(18, 18, 18, 0.8)), var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
         .level-card.locked {
             opacity: 0.5;
             border-color: #22222e;
@@ -129,12 +135,6 @@
             font-weight: 700;
             text-align: center;
             line-height: 1.2;
-        }
-        .song-icon {
-            width: 22px;
-            height: 22px;
-            object-fit: contain;
-            flex-shrink: 0;
         }
         .target-score {
             color: #A0A0A0;
@@ -284,7 +284,7 @@ function playPluck(freq, duration = 0.4) {
 const SONGS = {
     mountain_king: {
         title: "Mountain King",
-        icon: "assets/icons/mountain.PNG", // مسیر فایل آیکون شما (PNG یا SVG)
+        icon: "mountain.jpg",
         stepDur: 0.28,
         chart: [
             [0, 0, 'B3', 0], [1, 1, 'C#4', 0], [2, 2, 'D4', 0], [3, 3, 'E4', 0], [4, 2, 'F#4', 0], [5, 2, 'D4', 0], [6, 2, 'F#4', 0],
@@ -304,7 +304,7 @@ const SONGS = {
     },
     turkish_march: {
         title: "Turkish March",
-        icon: "assets/icons/march.PNG",
+        icon: "march.jpg",
         stepDur: 0.22,
         chart: [
             [0, 1, 'B4', 0], [1, 0, 'A4', 0], [2, 1, 'G#4', 0], [3, 0, 'A4', 0], [4, 2, 'C5', 2],
@@ -321,7 +321,7 @@ const SONGS = {
     },
     fur_elise: {
         title: "Für Elise",
-        icon: "assets/icons/elise.PNG",
+        icon: "elise.jpg",
         stepDur: 0.25,
         chart: [
             [0, 3, 'E5', 0], [1, 2, 'D#5', 0], [2, 3, 'E5', 0], [3, 2, 'D#5', 0], [4, 3, 'E5', 0], [5, 1, 'B4', 0], [6, 2, 'D5', 0], [7, 0, 'C5', 0], [8, 0, 'A4', 2],
@@ -336,7 +336,7 @@ const SONGS = {
     },
     symphony_5: {
         title: "Symphony No. 5",
-        icon: "assets/icons/elise.PNG",
+        icon: "mountain.jpg",
         stepDur: 0.22,
         chart: [
             [0, 1, 'G4', 0], [1, 1, 'G4', 0], [2, 1, 'G4', 0], [3, 0, 'D#4', 3],
@@ -380,11 +380,12 @@ function renderMenu() {
         card.className = `level-card ${isUnlocked ? 'unlocked' : 'locked'}`;
 
         if (isUnlocked) {
+            card.style.setProperty('--bg-image', `url("${song.icon}")`);
+            card.classList.add('has-bg');
             card.innerHTML = `
                 <div class="level-number">STAGE ${lvl.id}</div>
                 <div class="song-title-wrap">
                     <span class="song-name">${song.title}</span>
-                    <img src="${song.icon}" class="song-icon" alt="" onerror="this.style.display='none'">
                 </div>
                 <div class="target-score">GOAL: ${lvl.targetScore}</div>
                 <div class="stars-row">
