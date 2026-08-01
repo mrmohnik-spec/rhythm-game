@@ -2,7 +2,8 @@
 <html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
     <!-- جلوگیری از کَش مرورگر و تلگرام -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -16,6 +17,7 @@
             box-sizing: border-box;
             user-select: none;
             -webkit-user-select: none;
+            -webkit-touch-callout: none;
             margin: 0;
             padding: 0;
         }
@@ -42,6 +44,7 @@
             align-items: center;
             z-index: 10;
             padding: 24px 20px;
+            padding-bottom: calc(24px + env(safe-area-inset-bottom));
             overflow-y: auto;
         }
         .title {
@@ -68,7 +71,7 @@
             align-items: center;
             cursor: pointer;
             flex-shrink: 0;
-            transition: all 0.2s ease;
+            transition: background 0.2s ease;
         }
         .song-card:active {
             background: rgba(255, 255, 255, 0.15);
@@ -170,8 +173,12 @@ const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let actx = null;
 
 function initAudio() {
-    if (!actx) actx = new AudioCtx();
-    if (actx.state === 'suspended') actx.resume();
+    if (!actx) {
+        actx = new AudioCtx();
+    }
+    if (actx.state === 'suspended') {
+        actx.resume();
+    }
 }
 
 const NOTE_FREQS = {
@@ -324,7 +331,7 @@ function unlockNextLevel() {
 }
 
 /* ==========================================
-   3. GAME ENGINE
+   3. GAME ENGINE & CANVAS UTILS
    ========================================== */
 const LANES = 4;
 const INITIAL_DELAY = 1.8;
@@ -352,10 +359,31 @@ let held = [false, false, false, false];
 const LANE_HUES = [160, 200, 280, 340];
 function hsl(h, s, l, a = 1) { return `hsla(${h}, ${s}%, ${l}%, ${a})`; }
 
+// پشتیبانی از رسم مستطیل گرد گوشه روی مرورگرهای آیفون/سافاری قدیمی‌تر
+function drawRoundRect(context, x, y, width, height, radius) {
+    if (context.roundRect) {
+        context.beginPath();
+        context.roundRect(x, y, width, height, radius);
+    } else {
+        context.beginPath();
+        if (typeof radius === 'number') radius = {tl: radius, tr: radius, br: radius, bl: radius};
+        context.moveTo(x + radius.tl, y);
+        context.lineTo(x + width - radius.tr, y);
+        context.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+        context.lineTo(x + width, y + height - radius.br);
+        context.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+        context.lineTo(x + radius.bl, y + height);
+        context.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+        context.lineTo(x, y + radius.tl);
+        context.quadraticCurveTo(x, y, x + radius.tl, y);
+        context.closePath();
+    }
+}
+
 function resize() {
     W = window.innerWidth;
     H = window.innerHeight;
-    const dpr = isTouch ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
+    const dpr = isTouch ? Math.min(window.devicePixelRatio || 1, 2) : Math.min(window.devicePixelRatio || 1, 1.5);
     cv.width = W * dpr;
     cv.height = H * dpr;
     ctx.scale(dpr, dpr);
@@ -417,6 +445,7 @@ function startGame() {
    ========================================== */
 function processInput(lane) {
     if (!gameRunning) return;
+    initAudio();
     const songTime = (performance.now() / 1000) - startTime;
     let target = null;
     let minDiff = Infinity;
@@ -458,6 +487,7 @@ function checkScoreForUnlock() {
 
 cv.addEventListener('touchstart', (e) => {
     e.preventDefault();
+    initAudio();
     const rect = cv.getBoundingClientRect();
     for (let i = 0; i < e.changedTouches.length; i++) {
         const lane = Math.floor((e.changedTouches[i].clientX - rect.left) / LANE_W);
@@ -471,6 +501,7 @@ cv.addEventListener('touchend', (e) => {
 }, { passive: false });
 
 cv.addEventListener('mousedown', (e) => {
+    initAudio();
     const lane = Math.floor(e.clientX / LANE_W);
     if (lane >= 0 && lane < LANES) { held[lane] = true; processInput(lane); }
 });
@@ -536,8 +567,7 @@ function updateAndDraw() {
         ctx.beginPath(); ctx.moveTo(i * LANE_W, 0); ctx.lineTo(i * LANE_W, H); ctx.stroke();
 
         ctx.fillStyle = held[i] ? hsl(LANE_HUES[i], 100, 50, 0.3) : hsl(LANE_HUES[i], 100, 50, 0.08);
-        ctx.beginPath();
-        ctx.roundRect(cx - NOTE_W/2, HIT_Y - 25, NOTE_W, 50, 10);
+        drawRoundRect(ctx, cx - NOTE_W/2, HIT_Y - 25, NOTE_W, 50, 10);
         ctx.fill();
         ctx.strokeStyle = hsl(LANE_HUES[i], 100, 60, 0.6);
         ctx.stroke();
@@ -566,8 +596,7 @@ function updateAndDraw() {
                 let h = Math.max(32, bottomY - topY);
 
                 ctx.fillStyle = n.missed ? '#3a3a48' : hsl(hue, 100, 55);
-                ctx.beginPath();
-                ctx.roundRect(cx - NOTE_W / 2, topY, NOTE_W, h, Math.min(10, h / 2));
+                drawRoundRect(ctx, cx - NOTE_W / 2, topY, NOTE_W, h, Math.min(10, h / 2));
                 ctx.fill();
 
                 ctx.strokeStyle = n.missed ? '#555' : '#ffffff';
@@ -583,7 +612,7 @@ function updateAndDraw() {
         const isCompleted = score >= currentTarget;
 
         ctx.fillStyle = '#fff';
-        ctx.font = '700 15px sans-serif';
+        ctx.font = '700 15px -apple-system, BlinkMacSystemFont, sans-serif';
         ctx.textAlign = 'right';
         ctx.fillText(`SCORE: ${score} / ${currentTarget}`, W - 20, 36);
         ctx.fillText(`COMBO: ${combo}`, W - 20, 58);
