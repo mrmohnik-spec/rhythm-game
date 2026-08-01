@@ -41,6 +41,8 @@ function renderMenu() {
             `;
             card.onclick = () => selectLevel(idx);
         } else {
+            card.style.setProperty('--bg-image', `url("${song.icon}")`);
+            card.classList.add('has-bg');
             card.innerHTML = `
                 <div class="level-number">STAGE ${lvl.id}</div>
                 <div class="lock-icon">🔒</div>
