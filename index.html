@@ -26,6 +26,9 @@
             width: 100%;
             height: 100%;
             display: block;
+            /* بهینه‌سازی سخت‌افزاری برای WebView تلگرام */
+            transform: translateZ(0);
+            will-change: transform;
         }
         #menuOverlay {
             position: absolute;
@@ -39,89 +42,36 @@
             padding: 24px 20px;
             overflow-y: auto;
         }
-        .title {
-            color: #fff;
-            font-size: 26px;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-        .subtitle {
-            color: #8a8a9e;
-            font-size: 13px;
-            margin-bottom: 16px;
-        }
+        .title { color: #fff; font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+        .subtitle { color: #8a8a9e; font-size: 13px; margin-bottom: 16px; }
         .song-card {
-            width: 100%;
-            max-width: 320px;
+            width: 100%; max-width: 320px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 14px;
-            padding: 12px 16px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: all 0.2s ease;
+            border-radius: 14px; padding: 12px 16px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; flex-shrink: 0;
         }
-        .song-card:active {
-            background: rgba(255, 255, 255, 0.15);
-        }
-        .song-card.locked {
-            opacity: 0.4;
-            border-color: rgba(255, 255, 255, 0.05);
-            cursor: not-allowed;
-        }
+        .song-card.locked { opacity: 0.4; cursor: not-allowed; }
         .song-info h3 { color: #fff; font-size: 15px; margin-bottom: 2px; }
         .song-info p { color: #8a8a9e; font-size: 12px; }
-        .play-btn {
-            background: #6366f1;
-            color: #fff;
-            padding: 8px 14px;
-            border-radius: 18px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-        .locked .play-btn {
-            background: #333;
-            color: #777;
-        }
+        .play-btn { background: #6366f1; color: #fff; padding: 8px 14px; border-radius: 18px; font-size: 12px; font-weight: 700; }
+        .locked .play-btn { background: #333; color: #777; }
         #backBtn {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            z-index: 5;
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 12px;
-            display: none;
-            cursor: pointer;
+            position: absolute; top: 16px; left: 16px; z-index: 5;
+            background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; padding: 8px 14px; border-radius: 10px; font-size: 12px; display: none; cursor: pointer;
         }
         #levelCompleteNotice {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #22c55e;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-            display: none;
-            z-index: 6;
-            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #22c55e; color: white; padding: 8px 16px; border-radius: 20px;
+            font-size: 13px; font-weight: bold; display: none; z-index: 6;
         }
     </style>
 </head>
 <body>
 
 <div id="levelCompleteNotice">🎉 مرحله بعدی باز شد!</div>
-
 <div id="menuOverlay">
     <div class="title">RHYTHM MASTER</div>
     <div class="subtitle">شاهکارهای موسیقی کلاسیک</div>
@@ -133,7 +83,7 @@
 
 <script>
 /* ==========================================
-   1. TELEGRAM SDK & AUDIO ENGINE
+   1. TELEGRAM SDK & AUDIO ENGINE (iOS Fixed)
    ========================================== */
 const tg = window.Telegram?.WebApp;
 if (tg) {
@@ -155,10 +105,25 @@ function buzz(type = 'light') {
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let actx = null;
 
-function initAudio() {
-    if (!actx) actx = new AudioCtx();
-    if (actx.state === 'suspended') actx.resume();
+// حل کامل مشکل صدای آیفون (iOS)
+function unlockAudioiOS() {
+    if (!actx) {
+        actx = new AudioCtx();
+    }
+    if (actx.state === 'suspended') {
+        actx.resume();
+    }
+    // یک صدای بی‌صدا کوتاه ایجاد می‌کنیم تا قفل iOS کلاً باز شود
+    const buffer = actx.createBuffer(1, 1, 22050);
+    const source = actx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(actx.destination);
+    source.start(0);
 }
+
+// ثبت لمس اول روی صفحه برای باز کردن صدا در iOS
+window.addEventListener('touchstart', unlockAudioiOS, { once: true });
+window.addEventListener('click', unlockAudioiOS, { once: true });
 
 const NOTE_FREQS = {
     'F3': 174.61, 'F#3': 185.00, 'G3': 196.00, 'G#3': 207.65, 'A3': 220.00, 'A#3': 233.08, 'B3': 246.94, 'C4': 261.63, 'C#4': 277.18, 'D4': 293.66,
@@ -170,6 +135,8 @@ const NOTE_FREQS = {
 
 function playPluck(freq, duration = 0.4) {
     if (!actx) return;
+    if (actx.state === 'suspended') actx.resume();
+
     const now = actx.currentTime;
     const osc = actx.createOscillator();
     const gain = actx.createGain();
@@ -192,9 +159,7 @@ function playPluck(freq, duration = 0.4) {
    ========================================== */
 const SONGS = {
     mountain_king: {
-        title: "Mountain King ⚡",
-        desc: "ادوار گریگ • هیجان‌انگیز",
-        stepDur: 0.28,
+        title: "Mountain King ⚡", desc: "ادوار گریگ • هیجان‌انگیز", stepDur: 0.28,
         chart: [
             [0, 0, 'B3', 0], [1, 1, 'C#4', 0], [2, 2, 'D4', 0], [3, 3, 'E4', 0], [4, 2, 'F#4', 0], [5, 2, 'D4', 0], [6, 2, 'F#4', 0],
             [8, 1, 'C#4', 0], [9, 1, 'A3', 0], [10, 1, 'C#4', 0], [12, 0, 'B3', 0], [13, 1, 'G3', 0], [14, 0, 'B3', 0],
@@ -212,9 +177,7 @@ const SONGS = {
         ]
     },
     turkish_march: {
-        title: "Turkish March 🌟",
-        desc: "موزارت • پرریتم و شاد",
-        stepDur: 0.22,
+        title: "Turkish March 🌟", desc: "موزارت • پرریتم و شاد", stepDur: 0.22,
         chart: [
             [0, 1, 'B4', 0], [1, 0, 'A4', 0], [2, 1, 'G#4', 0], [3, 0, 'A4', 0], [4, 2, 'C5', 2],
             [8, 2, 'D5', 0], [9, 1, 'C5', 0], [10, 2, 'B4', 0], [11, 1, 'C5', 0], [12, 3, 'E5', 2],
@@ -229,9 +192,7 @@ const SONGS = {
         ]
     },
     fur_elise: {
-        title: "Für Elise 🎻",
-        desc: "بتهوون • کلاسیک و ماندگار",
-        stepDur: 0.25,
+        title: "Für Elise 🎻", desc: "بتهوون • کلاسیک و ماندگار", stepDur: 0.25,
         chart: [
             [0, 3, 'E5', 0], [1, 2, 'D#5', 0], [2, 3, 'E5', 0], [3, 2, 'D#5', 0], [4, 3, 'E5', 0], [5, 1, 'B4', 0], [6, 2, 'D5', 0], [7, 0, 'C5', 0], [8, 0, 'A4', 2],
             [12, 0, 'C4', 0], [13, 1, 'E4', 0], [14, 2, 'A4', 0], [15, 3, 'B4', 2],
@@ -244,9 +205,7 @@ const SONGS = {
         ]
     },
     symphony_5: {
-        title: "Symphony No. 5 🎺",
-        desc: "بتهوون • کوبنده و حماسی",
-        stepDur: 0.22,
+        title: "Symphony No. 5 🎺", desc: "بتهوون • کوبنده و حماسی", stepDur: 0.22,
         chart: [
             [0, 1, 'G4', 0], [1, 1, 'G4', 0], [2, 1, 'G4', 0], [3, 0, 'D#4', 3],
             [8, 1, 'F4', 0], [9, 1, 'F4', 0], [10, 1, 'F4', 0], [11, 0, 'D4', 4],
@@ -260,7 +219,6 @@ const SONGS = {
     }
 };
 
-// ساختار مراحل بازی و امتیازهای لازم برای فتح هر مرحله
 const LEVELS = [
     { id: 1, songKey: 'mountain_king', targetScore: 1000 },
     { id: 2, songKey: 'turkish_march', targetScore: 2000 },
@@ -268,17 +226,15 @@ const LEVELS = [
     { id: 4, songKey: 'symphony_5',    targetScore: 4000 }
 ];
 
-let currentLevelIndex = 0; // مرحله فعال فعلی
-let unlockedLevel = parseInt(localStorage.getItem('unlocked_level') || '1'); // مرحله بازشده کاربر
+let currentLevelIndex = 0;
+let unlockedLevel = parseInt(localStorage.getItem('unlocked_level') || '1');
 
 function renderMenu() {
     const list = document.getElementById('levelsList');
     list.innerHTML = '';
-
     LEVELS.forEach((lvl, idx) => {
         const song = SONGS[lvl.songKey];
         const isUnlocked = lvl.id <= unlockedLevel;
-
         const card = document.createElement('div');
         card.className = `song-card ${isUnlocked ? '' : 'locked'}`;
         card.innerHTML = `
@@ -288,11 +244,7 @@ function renderMenu() {
             </div>
             <div class="play-btn">${isUnlocked ? 'شروع' : 'قفل'}</div>
         `;
-
-        if (isUnlocked) {
-            card.onclick = () => selectLevel(idx);
-        }
-
+        if (isUnlocked) card.onclick = () => selectLevel(idx);
         list.appendChild(card);
     });
 }
@@ -302,8 +254,6 @@ function unlockNextLevel() {
     if (nextLevelId > unlockedLevel && nextLevelId <= LEVELS.length) {
         unlockedLevel = nextLevelId;
         localStorage.setItem('unlocked_level', unlockedLevel);
-        
-        // نمایش پیام آنلاک شدن مرحله
         const notice = document.getElementById('levelCompleteNotice');
         notice.style.display = 'block';
         setTimeout(() => { notice.style.display = 'none'; }, 3000);
@@ -312,28 +262,21 @@ function unlockNextLevel() {
 }
 
 /* ==========================================
-   3. GAME ENGINE
+   3. GAME ENGINE (Optimized Canvas)
    ========================================== */
 const LANES = 4;
 const INITIAL_DELAY = 1.8;
-
 const cv = document.getElementById('gameCanvas');
-const ctx = cv.getContext('2d', { alpha: false });
+const ctx = cv.getContext('2d', { alpha: false }); // حذف شفافیت برای رندر سریع‌تر
 
 let W = 0, H = 0, LANE_W = 0, HIT_Y = 0, NOTE_W = 0;
-let isTouch = 'ontouchstart' in window;
-
 let gameRunning = false;
 let currentSongKey = 'mountain_king';
 let loopDuration = 0;
 let startTime = 0;
-let score = 0;
-let combo = 0;
-
+let score = 0, combo = 0;
 let currentLoop = 0;
-let targetSpeedFactor = 1.0;
-let currentSpeedFactor = 1.0;
-
+let targetSpeedFactor = 1.0, currentSpeedFactor = 1.0;
 let notesState = [];
 let held = [false, false, false, false];
 
@@ -343,10 +286,9 @@ function hsl(h, s, l, a = 1) { return `hsla(${h}, ${s}%, ${l}%, ${a})`; }
 function resize() {
     W = window.innerWidth;
     H = window.innerHeight;
-    const dpr = isTouch ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
-    cv.width = W * dpr;
-    cv.height = H * dpr;
-    ctx.scale(dpr, dpr);
+    // ثابت نگه داشتن DPR روی 1 برای بهینه‌سازی رندر در مینی‌اپ تلگرام
+    cv.width = W;
+    cv.height = H;
     LANE_W = W / LANES;
     HIT_Y = H - 110;
     NOTE_W = LANE_W * 0.72;
@@ -355,11 +297,11 @@ window.addEventListener('resize', resize);
 resize();
 
 function selectLevel(index) {
+    unlockAudioiOS();
     currentLevelIndex = index;
     currentSongKey = LEVELS[index].songKey;
     document.getElementById('menuOverlay').style.display = 'none';
     document.getElementById('backBtn').style.display = 'block';
-    initAudio();
     startGame();
 }
 
@@ -373,14 +315,10 @@ function showMenu() {
 function startGame() {
     gameRunning = true;
     startTime = performance.now() / 1000;
-    score = 0;
-    combo = 0;
-    currentLoop = 0;
-    targetSpeedFactor = 1.0;
-    currentSpeedFactor = 1.0;
+    score = 0; combo = 0; currentLoop = 0;
+    targetSpeedFactor = 1.0; currentSpeedFactor = 1.0;
     
     const song = SONGS[currentSongKey];
-    
     let maxStepWithDur = 0;
     song.chart.forEach(item => {
         const endStep = item[0] + item[3] + 4;
@@ -388,13 +326,10 @@ function startGame() {
     });
     
     loopDuration = maxStepWithDur * song.stepDur;
-
     notesState = song.chart.map((item, id) => {
         const [step, lane, noteName, durSteps] = item;
-        const time = step * song.stepDur;
-        const dur = durSteps * song.stepDur;
         return { 
-            id, lane, noteName, baseTime: time, dur, 
+            id, lane, noteName, baseTime: step * song.stepDur, dur: durSteps * song.stepDur, 
             lastLoop: -1, hit: false, holding: false, completed: false, missed: false 
         };
     });
@@ -432,22 +367,20 @@ function processInput(lane) {
             playPluck(NOTE_FREQS[target.noteName] || 440, target.dur + 0.3);
         }
 
-        // بررسی صعود به مرحله بعد بر اساس امتیاز
         checkScoreForUnlock();
-
         buzz('light');
     }
 }
 
 function checkScoreForUnlock() {
-    const targetScore = LEVELS[currentLevelIndex].targetScore;
-    if (score >= targetScore) {
+    if (score >= LEVELS[currentLevelIndex].targetScore) {
         unlockNextLevel();
     }
 }
 
 cv.addEventListener('touchstart', (e) => {
     e.preventDefault();
+    unlockAudioiOS();
     const rect = cv.getBoundingClientRect();
     for (let i = 0; i < e.changedTouches.length; i++) {
         const lane = Math.floor((e.changedTouches[i].clientX - rect.left) / LANE_W);
@@ -461,13 +394,14 @@ cv.addEventListener('touchend', (e) => {
 }, { passive: false });
 
 cv.addEventListener('mousedown', (e) => {
+    unlockAudioiOS();
     const lane = Math.floor(e.clientX / LANE_W);
     if (lane >= 0 && lane < LANES) { held[lane] = true; processInput(lane); }
 });
 cv.addEventListener('mouseup', () => { held.fill(false); });
 
 /* ==========================================
-   5. RENDER LOOP
+   5. RENDER LOOP (Optimized for WebViews)
    ========================================== */
 function updateAndDraw() {
     ctx.fillStyle = '#04040a';
@@ -507,7 +441,7 @@ function updateAndDraw() {
                     n.completed = true;
                 } else {
                     score += 2;
-                    checkScoreForUnlock(); // چک کردن امتیاز موقع نگه داشتن نوت‌های کشیده
+                    checkScoreForUnlock();
                     if (songTime >= n.currentTime + n.dur) {
                         n.holding = false;
                         n.completed = true;
@@ -519,21 +453,19 @@ function updateAndDraw() {
         });
     }
 
-    // ۱. رسم خطوط و دکمه‌ها
+    // ۱. رسم خطوط و دکمه‌ها (بهینه‌شده بدون roundRect)
     for (let i = 0; i < LANES; i++) {
         const cx = i * LANE_W + LANE_W / 2;
         ctx.strokeStyle = hsl(LANE_HUES[i], 80, 50, 0.1);
         ctx.beginPath(); ctx.moveTo(i * LANE_W, 0); ctx.lineTo(i * LANE_W, H); ctx.stroke();
 
         ctx.fillStyle = held[i] ? hsl(LANE_HUES[i], 100, 50, 0.3) : hsl(LANE_HUES[i], 100, 50, 0.08);
-        ctx.beginPath();
-        ctx.roundRect(cx - NOTE_W/2, HIT_Y - 25, NOTE_W, 50, 10);
-        ctx.fill();
+        ctx.fillRect(cx - NOTE_W/2, HIT_Y - 25, NOTE_W, 50);
         ctx.strokeStyle = hsl(LANE_HUES[i], 100, 60, 0.6);
-        ctx.stroke();
+        ctx.strokeRect(cx - NOTE_W/2, HIT_Y - 25, NOTE_W, 50);
     }
 
-    // ۲. رسم نوت‌ها
+    // ۲. رسم نوت‌ها (استفاده از fillRect به جای roundRect برای سرعت بالا)
     if (gameRunning) {
         notesState.forEach(n => {
             const timeDiffHead = n.currentTime - songTime;
@@ -556,13 +488,11 @@ function updateAndDraw() {
                 let h = Math.max(32, bottomY - topY);
 
                 ctx.fillStyle = n.missed ? '#3a3a48' : hsl(hue, 100, 55);
-                ctx.beginPath();
-                ctx.roundRect(cx - NOTE_W / 2, topY, NOTE_W, h, Math.min(10, h / 2));
-                ctx.fill();
+                ctx.fillRect(cx - NOTE_W / 2, topY, NOTE_W, h);
 
                 ctx.strokeStyle = n.missed ? '#555' : '#ffffff';
                 ctx.lineWidth = n.holding ? 3 : 1.5;
-                ctx.stroke();
+                ctx.strokeRect(cx - NOTE_W / 2, topY, NOTE_W, h);
             }
         });
     }
@@ -579,7 +509,6 @@ function updateAndDraw() {
         ctx.fillText(`COMBO: ${combo}`, W - 20, 58);
         ctx.fillText(`SPEED: ${Math.round(currentSpeedFactor * 100)}%`, W - 20, 80);
         
-        // نمایش وضعیت باز شدن مرحله
         if (isCompleted) {
             ctx.fillStyle = '#22c55e';
             ctx.fillText(`مرحله بعد باز شد! 🔓`, W - 20, 102);
@@ -589,7 +518,6 @@ function updateAndDraw() {
     requestAnimationFrame(updateAndDraw);
 }
 
-// شروع و مقداردهی اولیه منو
 renderMenu();
 requestAnimationFrame(updateAndDraw);
 </script>
