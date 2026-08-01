@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- جلوگیری از کَش مرورگر و تلگرام -->
+    <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -25,8 +25,8 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #121212; /* Material Dark Background */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #121212;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             touch-action: none;
         }
         #gameCanvas {
@@ -37,86 +37,137 @@
         #menuOverlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(18, 18, 18, 0.96); /* Dark background overlay */
+            background: radial-gradient(circle at center, #1f1f2e 0%, #121212 100%);
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
             z-index: 10;
-            padding: 24px 20px;
+            padding: 30px 20px;
             padding-bottom: calc(24px + env(safe-area-inset-bottom));
             overflow-y: auto;
         }
+        .header-container {
+            text-align: center;
+            margin-bottom: 24px;
+        }
         .title {
-            color: #F5F5F5; /* Primary Text */
-            font-size: 26px;
-            font-weight: 800;
-            margin-bottom: 4px;
+            color: #F5F5F5;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            text-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            text-transform: uppercase;
         }
         .subtitle {
-            color: #A0A0A0; /* Secondary Text */
-            font-size: 13px;
-            margin-bottom: 16px;
-        }
-        .song-card {
-            width: 100%;
-            max-width: 320px;
-            background: #1A1A1A; /* Card background */
-            border: 1px solid #2A2A2A; /* Border color */
-            border-radius: 14px;
-            padding: 12px 16px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: background 0.2s ease;
-        }
-        .song-card:active {
-            background: #252525;
-        }
-        .song-card.locked {
-            opacity: 0.45;
-            border-color: #2A2A2A;
-            cursor: not-allowed;
-        }
-        .song-info h3 { color: #F5F5F5; font-size: 15px; margin-bottom: 2px; }
-        .song-info p { color: #A0A0A0; font-size: 12px; }
-        .play-btn {
-            background: #6366f1;
-            color: #fff;
-            padding: 8px 14px;
-            border-radius: 18px;
+            color: #6366f1;
             font-size: 12px;
             font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 4px;
         }
-        .locked .play-btn {
-            background: #2A2A2A;
-            color: #A0A0A0;
+
+        /* Arcade Level Grid */
+        .levels-grid {
+            width: 100%;
+            max-width: 360px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
         }
-        .version-tag {
-            color: #A0A0A0;
+        .level-card {
+            background: linear-gradient(145deg, #1e1e28, #16161e);
+            border: 2px solid #2a2a3c;
+            border-radius: 20px;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            transition: transform 0.15s ease, border-color 0.15s ease;
+            height: 135px;
+        }
+        .level-card:active {
+            transform: scale(0.95);
+        }
+        .level-card.unlocked {
+            border-color: #6366f1;
+            background: linear-gradient(145deg, #252538, #1a1a26);
+        }
+        .level-card.locked {
+            opacity: 0.5;
+            border-color: #22222e;
+            cursor: not-allowed;
+            background: #15151a;
+        }
+        .level-number {
             font-size: 11px;
-            margin-top: 16px;
-            margin-bottom: 8px;
+            font-weight: 800;
+            color: #8a8a9e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .unlocked .level-number {
+            color: #818cf8;
+        }
+        .song-name {
+            color: #F5F5F5;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            margin: 4px 0;
+            line-height: 1.2;
+        }
+        .target-score {
+            color: #A0A0A0;
+            font-size: 10px;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            opacity: 0.7;
+        }
+        .stars-row {
+            display: flex;
+            gap: 4px;
+            margin-top: 6px;
+        }
+        .star {
+            font-size: 12px;
+            color: #333344;
+        }
+        .star.active {
+            color: #fbbf24;
+            text-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
+        }
+        .lock-icon {
+            font-size: 22px;
+            margin: 8px 0;
+        }
+
+        .version-tag {
+            color: #666;
+            font-size: 11px;
+            margin-top: auto;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
         #backBtn {
             position: absolute;
             top: 16px;
             left: 16px;
             z-index: 5;
-            background: #1A1A1A;
+            background: rgba(26, 26, 26, 0.8);
             border: 1px solid #2A2A2A;
             color: #F5F5F5;
-            padding: 8px 14px;
-            border-radius: 10px;
+            padding: 8px 16px;
+            border-radius: 12px;
             font-size: 12px;
+            font-weight: 700;
             display: none;
             cursor: pointer;
+            backdrop-filter: blur(8px);
         }
         #levelCompleteNotice {
             position: absolute;
@@ -125,28 +176,33 @@
             transform: translateX(-50%);
             background: #22c55e;
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 800;
             display: none;
             z-index: 6;
-            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+            box-shadow: 0 4px 16px rgba(34, 197, 94, 0.5);
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
 
-<div id="levelCompleteNotice">🎉 مرحله بعدی باز شد!</div>
+<div id="levelCompleteNotice">🎉 NEXT LEVEL UNLOCKED!</div>
 
 <div id="menuOverlay">
-    <div class="title">RHYTHM MASTER</div>
-    <div class="subtitle">شاهکارهای موسیقی کلاسیک</div>
-    <div id="levelsList" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
-    <div class="version-tag">v1.2</div>
+    <div class="header-container">
+        <div class="title">Rhythm Master</div>
+        <div class="subtitle">SELECT LEVEL</div>
+    </div>
+    
+    <div id="levelsGrid" class="levels-grid"></div>
+    
+    <div class="version-tag">v2.0</div>
 </div>
 
-<button id="backBtn" onclick="showMenu()">منو ☰</button>
+<button id="backBtn" onclick="showMenu()">MENU ☰</button>
 <canvas id="gameCanvas"></canvas>
 
 <script>
@@ -215,7 +271,6 @@ function playPluck(freq, duration = 0.4) {
 const SONGS = {
     mountain_king: {
         title: "Mountain King ⚡",
-        desc: "ادوار گریگ • هیجان‌انگیز",
         stepDur: 0.28,
         chart: [
             [0, 0, 'B3', 0], [1, 1, 'C#4', 0], [2, 2, 'D4', 0], [3, 3, 'E4', 0], [4, 2, 'F#4', 0], [5, 2, 'D4', 0], [6, 2, 'F#4', 0],
@@ -235,7 +290,6 @@ const SONGS = {
     },
     turkish_march: {
         title: "Turkish March 🌟",
-        desc: "موزارت • پرریتم و شاد",
         stepDur: 0.22,
         chart: [
             [0, 1, 'B4', 0], [1, 0, 'A4', 0], [2, 1, 'G#4', 0], [3, 0, 'A4', 0], [4, 2, 'C5', 2],
@@ -252,7 +306,6 @@ const SONGS = {
     },
     fur_elise: {
         title: "Für Elise 🎻",
-        desc: "بتهوون • کلاسیک و ماندگار",
         stepDur: 0.25,
         chart: [
             [0, 3, 'E5', 0], [1, 2, 'D#5', 0], [2, 3, 'E5', 0], [3, 2, 'D#5', 0], [4, 3, 'E5', 0], [5, 1, 'B4', 0], [6, 2, 'D5', 0], [7, 0, 'C5', 0], [8, 0, 'A4', 2],
@@ -267,7 +320,6 @@ const SONGS = {
     },
     symphony_5: {
         title: "Symphony No. 5 🎺",
-        desc: "بتهوون • کوبنده و حماسی",
         stepDur: 0.22,
         chart: [
             [0, 1, 'G4', 0], [1, 1, 'G4', 0], [2, 1, 'G4', 0], [3, 0, 'D#4', 3],
@@ -291,30 +343,47 @@ const LEVELS = [
 
 let currentLevelIndex = 0;
 let unlockedLevel = parseInt(localStorage.getItem('unlocked_level') || '1');
+let levelScores = JSON.parse(localStorage.getItem('level_scores') || '{}');
 
 function renderMenu() {
-    const list = document.getElementById('levelsList');
-    list.innerHTML = '';
+    const grid = document.getElementById('levelsGrid');
+    grid.innerHTML = '';
 
     LEVELS.forEach((lvl, idx) => {
         const song = SONGS[lvl.songKey];
         const isUnlocked = lvl.id <= unlockedLevel;
+        const highScore = levelScores[lvl.id] || 0;
+
+        // محاسبه ستاره‌ها بر اساس امتیاز کسب شده
+        let starsCount = 0;
+        if (highScore >= lvl.targetScore) starsCount = 1;
+        if (highScore >= lvl.targetScore * 1.5) starsCount = 2;
+        if (highScore >= lvl.targetScore * 2) starsCount = 3;
 
         const card = document.createElement('div');
-        card.className = `song-card ${isUnlocked ? '' : 'locked'}`;
-        card.innerHTML = `
-            <div class="song-info">
-                <h3>مرحله ${lvl.id}: ${song.title} ${isUnlocked ? '' : '🔒'}</h3>
-                <p>هدف: ${lvl.targetScore} امتیاز</p>
-            </div>
-            <div class="play-btn">${isUnlocked ? 'شروع' : 'قفل'}</div>
-        `;
+        card.className = `level-card ${isUnlocked ? 'unlocked' : 'locked'}`;
 
         if (isUnlocked) {
+            card.innerHTML = `
+                <div class="level-number">STAGE ${lvl.id}</div>
+                <div class="song-name">${song.title}</div>
+                <div class="target-score">GOAL: ${lvl.targetScore}</div>
+                <div class="stars-row">
+                    <span class="star ${starsCount >= 1 ? 'active' : ''}">★</span>
+                    <span class="star ${starsCount >= 2 ? 'active' : ''}">★</span>
+                    <span class="star ${starsCount >= 3 ? 'active' : ''}">★</span>
+                </div>
+            `;
             card.onclick = () => selectLevel(idx);
+        } else {
+            card.innerHTML = `
+                <div class="level-number">STAGE ${lvl.id}</div>
+                <div class="lock-icon">🔒</div>
+                <div class="target-score">LOCKED</div>
+            `;
         }
 
-        list.appendChild(card);
+        grid.appendChild(card);
     });
 }
 
@@ -328,6 +397,13 @@ function unlockNextLevel() {
         notice.style.display = 'block';
         setTimeout(() => { notice.style.display = 'none'; }, 3000);
         buzz('heavy');
+    }
+}
+
+function saveScore(lvlId, currentScore) {
+    if (!levelScores[lvlId] || currentScore > levelScores[lvlId]) {
+        levelScores[lvlId] = currentScore;
+        localStorage.setItem('level_scores', JSON.stringify(levelScores));
     }
 }
 
@@ -479,8 +555,9 @@ function processInput(lane) {
 }
 
 function checkScoreForUnlock() {
-    const targetScore = LEVELS[currentLevelIndex].targetScore;
-    if (score >= targetScore) {
+    const currentLvl = LEVELS[currentLevelIndex];
+    saveScore(currentLvl.id, score);
+    if (score >= currentLvl.targetScore) {
         unlockNextLevel();
     }
 }
@@ -511,7 +588,6 @@ cv.addEventListener('mouseup', () => { held.fill(false); });
    5. RENDER LOOP
    ========================================== */
 function updateAndDraw() {
-    // ۱. پس‌زمینه اصلی بوم (کاهش خستگی چشم و ظاهری شیک‌تر)
     ctx.fillStyle = '#121212';
     ctx.fillRect(0, 0, W, H);
 
@@ -561,7 +637,7 @@ function updateAndDraw() {
         });
     }
 
-    // ۲. رسم خطوط و دکمه‌ها
+    // Line & Target Pads
     for (let i = 0; i < LANES; i++) {
         const cx = i * LANE_W + LANE_W / 2;
         ctx.strokeStyle = hsl(LANE_HUES[i], 80, 50, 0.12);
@@ -574,7 +650,7 @@ function updateAndDraw() {
         ctx.stroke();
     }
 
-    // ۳. رسم نوت‌ها
+    // Notes
     if (gameRunning) {
         notesState.forEach(n => {
             const timeDiffHead = n.currentTime - songTime;
@@ -607,7 +683,7 @@ function updateAndDraw() {
         });
     }
 
-    // ۴. UI و نمایش وضعیت
+    // In-game HUD
     if (gameRunning) {
         const currentTarget = LEVELS[currentLevelIndex].targetScore;
         const isCompleted = score >= currentTarget;
@@ -621,7 +697,7 @@ function updateAndDraw() {
         
         if (isCompleted) {
             ctx.fillStyle = '#22c55e';
-            ctx.fillText(`مرحله بعد باز شد! 🔓`, W - 20, 102);
+            ctx.fillText(`STAGE CLEAR! 🔓`, W - 20, 102);
         }
     }
 
