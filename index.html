@@ -90,7 +90,7 @@
             position: relative;
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             transition: transform 0.15s ease, border-color 0.15s ease;
-            height: 135px;
+            height: 140px;
         }
         .level-card:active {
             transform: scale(0.95);
@@ -115,13 +115,26 @@
         .unlocked .level-number {
             color: #818cf8;
         }
+        .song-title-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin: 4px 0;
+            width: 100%;
+        }
         .song-name {
             color: #F5F5F5;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             text-align: center;
-            margin: 4px 0;
             line-height: 1.2;
+        }
+        .song-icon {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            flex-shrink: 0;
         }
         .target-score {
             color: #A0A0A0;
@@ -131,7 +144,7 @@
         .stars-row {
             display: flex;
             gap: 4px;
-            margin-top: 6px;
+            margin-top: 4px;
         }
         .star {
             font-size: 12px;
@@ -199,7 +212,7 @@
     
     <div id="levelsGrid" class="levels-grid"></div>
     
-    <div class="version-tag">v2.0</div>
+    <div class="version-tag">v2.1</div>
 </div>
 
 <button id="backBtn" onclick="showMenu()">MENU ☰</button>
@@ -270,7 +283,8 @@ function playPluck(freq, duration = 0.4) {
    ========================================== */
 const SONGS = {
     mountain_king: {
-        title: "Mountain King ⚡",
+        title: "Mountain King",
+        icon: "assets/icons/mountain.PNG", // مسیر فایل آیکون شما (PNG یا SVG)
         stepDur: 0.28,
         chart: [
             [0, 0, 'B3', 0], [1, 1, 'C#4', 0], [2, 2, 'D4', 0], [3, 3, 'E4', 0], [4, 2, 'F#4', 0], [5, 2, 'D4', 0], [6, 2, 'F#4', 0],
@@ -289,7 +303,8 @@ const SONGS = {
         ]
     },
     turkish_march: {
-        title: "Turkish March 🌟",
+        title: "Turkish March",
+        icon: "assets/icons/march.PNG",
         stepDur: 0.22,
         chart: [
             [0, 1, 'B4', 0], [1, 0, 'A4', 0], [2, 1, 'G#4', 0], [3, 0, 'A4', 0], [4, 2, 'C5', 2],
@@ -305,7 +320,8 @@ const SONGS = {
         ]
     },
     fur_elise: {
-        title: "Für Elise 🎻",
+        title: "Für Elise",
+        icon: "assets/icons/elise.PNG",
         stepDur: 0.25,
         chart: [
             [0, 3, 'E5', 0], [1, 2, 'D#5', 0], [2, 3, 'E5', 0], [3, 2, 'D#5', 0], [4, 3, 'E5', 0], [5, 1, 'B4', 0], [6, 2, 'D5', 0], [7, 0, 'C5', 0], [8, 0, 'A4', 2],
@@ -319,7 +335,8 @@ const SONGS = {
         ]
     },
     symphony_5: {
-        title: "Symphony No. 5 🎺",
+        title: "Symphony No. 5",
+        icon: "assets/icons/elise.PNG",
         stepDur: 0.22,
         chart: [
             [0, 1, 'G4', 0], [1, 1, 'G4', 0], [2, 1, 'G4', 0], [3, 0, 'D#4', 3],
@@ -354,7 +371,6 @@ function renderMenu() {
         const isUnlocked = lvl.id <= unlockedLevel;
         const highScore = levelScores[lvl.id] || 0;
 
-        // محاسبه ستاره‌ها بر اساس امتیاز کسب شده
         let starsCount = 0;
         if (highScore >= lvl.targetScore) starsCount = 1;
         if (highScore >= lvl.targetScore * 1.5) starsCount = 2;
@@ -366,7 +382,10 @@ function renderMenu() {
         if (isUnlocked) {
             card.innerHTML = `
                 <div class="level-number">STAGE ${lvl.id}</div>
-                <div class="song-name">${song.title}</div>
+                <div class="song-title-wrap">
+                    <span class="song-name">${song.title}</span>
+                    <img src="${song.icon}" class="song-icon" alt="" onerror="this.style.display='none'">
+                </div>
                 <div class="target-score">GOAL: ${lvl.targetScore}</div>
                 <div class="stars-row">
                     <span class="star ${starsCount >= 1 ? 'active' : ''}">★</span>
