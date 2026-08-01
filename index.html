@@ -159,9 +159,20 @@
             color: #fbbf24;
             text-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
         }
-        .lock-icon {
-            font-size: 22px;
-            margin: 8px 0;
+        .lock-overlay {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(18, 18, 18, 0.75);
+            border: 1px solid #2a2a3c;
+            border-radius: 50%;
+            font-size: 15px;
+            z-index: 2;
         }
 
         .version-tag {

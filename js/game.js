@@ -24,30 +24,25 @@ function renderMenu() {
         const card = document.createElement('div');
         card.className = `level-card ${isUnlocked ? 'unlocked' : 'locked'}`;
 
+        card.style.setProperty('--bg-image', `url("${song.icon}")`);
+        card.classList.add('has-bg');
+
+        card.innerHTML = `
+            <div class="level-number">STAGE ${lvl.id}</div>
+            <div class="song-title-wrap">
+                <span class="song-name">${song.title}</span>
+            </div>
+            <div class="target-score">GOAL: ${lvl.targetScore}</div>
+            <div class="stars-row">
+                <span class="star ${starsCount >= 1 ? 'active' : ''}">★</span>
+                <span class="star ${starsCount >= 2 ? 'active' : ''}">★</span>
+                <span class="star ${starsCount >= 3 ? 'active' : ''}">★</span>
+            </div>
+            ${isUnlocked ? '' : '<div class="lock-overlay">🔒</div>'}
+        `;
+
         if (isUnlocked) {
-            card.style.setProperty('--bg-image', `url("${song.icon}")`);
-            card.classList.add('has-bg');
-            card.innerHTML = `
-                <div class="level-number">STAGE ${lvl.id}</div>
-                <div class="song-title-wrap">
-                    <span class="song-name">${song.title}</span>
-                </div>
-                <div class="target-score">GOAL: ${lvl.targetScore}</div>
-                <div class="stars-row">
-                    <span class="star ${starsCount >= 1 ? 'active' : ''}">★</span>
-                    <span class="star ${starsCount >= 2 ? 'active' : ''}">★</span>
-                    <span class="star ${starsCount >= 3 ? 'active' : ''}">★</span>
-                </div>
-            `;
             card.onclick = () => selectLevel(idx);
-        } else {
-            card.style.setProperty('--bg-image', `url("${song.icon}")`);
-            card.classList.add('has-bg');
-            card.innerHTML = `
-                <div class="level-number">STAGE ${lvl.id}</div>
-                <div class="lock-icon">🔒</div>
-                <div class="target-score">LOCKED</div>
-            `;
         }
 
         grid.appendChild(card);
