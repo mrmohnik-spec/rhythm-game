@@ -1,7 +1,7 @@
 /* Interstellar - First Step / Cornfield Chase (Hans Zimmer) */
 window.SONG_DEFS = window.SONG_DEFS || {};
 window.SONG_DEFS.interstellar = {
-    title: "Cornfield Chase",
+    title: "Interstellar",
     icon: "images/Interstellar.jpg",
     stepDur: 0.16, // ریتم سریع و اوج هیجان ارگ هانس زیمر
     chart: [
