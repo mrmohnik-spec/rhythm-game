@@ -2,7 +2,7 @@
 window.SONG_DEFS = window.SONG_DEFS || {};
 window.SONG_DEFS.mountain_king = {
     title: "Mountain King",
-    icon: "mountain.jpg",
+    icon: "images/mountain.jpg",
     stepDur: 0.28,
     chart: [
         [0, 0, 'B3', 0], [1, 1, 'C#4', 0], [2, 2, 'D4', 0], [3, 3, 'E4', 0], [4, 2, 'F#4', 0], [5, 2, 'D4', 0], [6, 2, 'F#4', 0],

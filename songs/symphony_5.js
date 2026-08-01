@@ -2,7 +2,7 @@
 window.SONG_DEFS = window.SONG_DEFS || {};
 window.SONG_DEFS.symphony_5 = {
     title: "Symphony No. 5",
-    icon: "mountain.jpg",
+    icon: "images/mountain.jpg",
     stepDur: 0.22,
     chart: [
         [0, 1, 'G4', 0], [1, 1, 'G4', 0], [2, 1, 'G4', 0], [3, 0, 'D#4', 3],

@@ -2,7 +2,7 @@
 window.SONG_DEFS = window.SONG_DEFS || {};
 window.SONG_DEFS.turkish_march = {
     title: "Turkish March",
-    icon: "march.jpg",
+    icon: "images/march.jpg",
     stepDur: 0.22,
     chart: [
         [0, 1, 'B4', 0], [1, 0, 'A4', 0], [2, 1, 'G#4', 0], [3, 0, 'A4', 0], [4, 2, 'C5', 2],

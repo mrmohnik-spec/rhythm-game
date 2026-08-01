@@ -2,7 +2,7 @@
 window.SONG_DEFS = window.SONG_DEFS || {};
 window.SONG_DEFS.fur_elise = {
     title: "Für Elise",
-    icon: "elise.jpg",
+    icon: "images/elise.jpg",
     stepDur: 0.25,
     chart: [
         [0, 3, 'E5', 0], [1, 2, 'D#5', 0], [2, 3, 'E5', 0], [3, 2, 'D#5', 0], [4, 3, 'E5', 0], [5, 1, 'B4', 0], [6, 2, 'D5', 0], [7, 0, 'C5', 0], [8, 0, 'A4', 2],
