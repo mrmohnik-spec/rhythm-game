@@ -2,7 +2,7 @@
 window.SONG_DEFS = window.SONG_DEFS || {};
 window.SONG_DEFS.lalaland = {
     title: "City of Stars",
-    icon: "images/mountain.jpg",
+    icon: "images/lalaland.jpg",
     stepDur: 0.28,
     chart: [
         [0, 0, 'B4', 0], [1, 1, 'C#5', 0], [2, 2, 'D5', 0], [3, 3, 'F#5', 2],

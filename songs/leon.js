@@ -2,7 +2,7 @@
 window.SONG_DEFS = window.SONG_DEFS || {};
 window.SONG_DEFS.leon = {
     title: "Shape of My Heart",
-    icon: "images/elise.jpg",
+    icon: "images/leon.jpg",
     stepDur: 0.3,
     chart: [
         [0, 0, 'C#4', 0], [1, 1, 'C#4', 0], [2, 2, 'B3', 0], [3, 3, 'B3', 0], [4, 0, 'A3', 0],
