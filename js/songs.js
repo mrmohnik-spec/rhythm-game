@@ -14,5 +14,6 @@ const LEVELS = [
     { id: 3, songKey: 'fur_elise',     targetScore: 3000 },
     { id: 4, songKey: 'symphony_5',    targetScore: 4000 },
     { id: 5, songKey: 'lalaland',      targetScore: 5000 },
-    { id: 6, songKey: 'leon',          targetScore: 6000 }
+    { id: 6, songKey: 'leon',          targetScore: 6000 },
+    { id: 7, songKey: 'river_flows',   targetScore: 7000 }
 ];
