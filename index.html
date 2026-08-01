@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- افزودن دستورات عدم ذخیره کَش برای دریافت آخرین آپدیت‌ها در تلگرام -->
+    <!-- جلوگیری از کَش مرورگر و تلگرام -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -92,6 +92,14 @@
             background: #333;
             color: #777;
         }
+        .version-tag {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 11px;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
         #backBtn {
             position: absolute;
             top: 16px;
@@ -131,6 +139,7 @@
     <div class="title">RHYTHM MASTER</div>
     <div class="subtitle">شاهکارهای موسیقی کلاسیک</div>
     <div id="levelsList" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
+    <div class="version-tag">v1.1</div>
 </div>
 
 <button id="backBtn" onclick="showMenu()">منو ☰</button>
